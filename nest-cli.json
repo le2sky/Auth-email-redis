@@ -6,7 +6,16 @@
       {
         "include": "./config/env/*.env",
         "outDir": "./dist"
+      },
+      {
+        "include": "./templates/*.hbs",
+        "outDir": "./dist"
+      },
+      {
+        "include": "./templates/*.css",
+        "outDir": "./dist"
       }
-    ]
+    ],
+    "watchAssets": true
   }
 }

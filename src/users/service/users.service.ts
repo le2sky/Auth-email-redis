@@ -36,7 +36,11 @@ export class UsersService {
 
     //@ saveUserAtRedis:Promise<boolean>
     await this.saveUserAtRedis(signupVerifyToken, userinfo);
-    return await this.emailService.sendJoinEmail(email, signupVerifyToken);
+    return await this.emailService.sendJoinEmail(
+      name,
+      email,
+      signupVerifyToken,
+    );
   }
 
   async verifyEmail(token: string) {
