@@ -1,1 +1,1 @@
-*.hbs linguist-detectable
+*.hbs linguist-detectable=false
