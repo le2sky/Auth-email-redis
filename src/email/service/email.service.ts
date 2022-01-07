@@ -20,15 +20,17 @@ export class EmailService {
     signupVerifyToken: string,
   ): Promise<string> {
     const baseUrl = this.config.baseUrl;
+    const imgUrl = this.config.imgUrl;
     const url = `${baseUrl}/users/email-verify?signupVerifyToken=${signupVerifyToken}`;
 
     try {
       await this.mailerService.sendMail({
         to: emailAddr,
-        template: 'test-template.hbs',
+        template: 'test2-template.hbs',
         context: {
           url,
           name,
+          imgUrl,
         },
       });
       return '이메일 전송 완료';
