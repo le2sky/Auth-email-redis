@@ -7,6 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from '../entities/user.entity';
 import * as uuid from 'uuid';
 import { ulid } from 'ulid';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -18,8 +19,9 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<string> {
+  public async create(createUserDto: CreateUserDto): Promise<string> {
     const { name, email, password } = createUserDto;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     if (await this.isUserExist(email)) {
       throw new UnprocessableEntityException(
@@ -31,7 +33,7 @@ export class UsersService {
     const userinfo = {
       name,
       email,
-      password,
+      password: hashedPassword,
     };
 
     //@ saveUserAtRedis:Promise<boolean>
@@ -43,8 +45,8 @@ export class UsersService {
     );
   }
 
-  async verifyEmail(token: string) {
-    const user = await this.getUserAtRedis(token);
+  public async verifyEmail(signupVerifyToken: string): Promise<string> {
+    const user = await this.getUserAtRedis(signupVerifyToken);
 
     if (await this.isUserExist(user.email)) {
       throw new UnprocessableEntityException(
@@ -52,11 +54,11 @@ export class UsersService {
       );
     }
     await this.saveUserAtDB(user);
-    await this.deleteUserAtRedis(token);
+    await this.deleteUserAtRedis(signupVerifyToken);
     return '회원가입이 완료되었습니다.';
   }
 
-  private async saveUserAtDB(userinfo: UserInfo) {
+  private async saveUserAtDB(userinfo: UserInfo): Promise<void> {
     await this.connection.transaction(async (manager) => {
       const user = new UserEntity();
       user.id = ulid();

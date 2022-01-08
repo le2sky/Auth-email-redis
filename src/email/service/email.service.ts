@@ -6,7 +6,6 @@ import {
 import { ConfigType } from '@nestjs/config';
 import emailConfig from 'src/config/emailConfig';
 import { MailerService } from '@nestjs-modules/mailer';
-import * as inlineCss from 'inline-css';
 
 @Injectable()
 export class EmailService {
@@ -14,7 +13,7 @@ export class EmailService {
     @Inject(emailConfig.KEY) private config: ConfigType<typeof emailConfig>,
     private mailerService: MailerService,
   ) {}
-  async sendJoinEmail(
+  public async sendJoinEmail(
     name: string,
     emailAddr: string,
     signupVerifyToken: string,
@@ -26,7 +25,7 @@ export class EmailService {
     try {
       await this.mailerService.sendMail({
         to: emailAddr,
-        template: 'test2-template.hbs',
+        template: 'email-template.hbs',
         context: {
           url,
           name,
