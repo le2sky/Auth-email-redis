@@ -1,13 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/service/email.service';
-import { RedisService, UserInfo } from 'src/redis/service/redis.service';
+import { RedisService } from 'src/redis/service/redis.service';
 import { Connection, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from '../entities/user.entity';
 import * as uuid from 'uuid';
 import { ulid } from 'ulid';
 import * as bcrypt from 'bcrypt';
+import { IUserInformation } from 'src/interface/user-info.interface';
 
 @Injectable()
 export class UsersService {
@@ -58,7 +59,7 @@ export class UsersService {
     return '회원가입이 완료되었습니다.';
   }
 
-  private async saveUserAtDB(userinfo: UserInfo): Promise<void> {
+  private async saveUserAtDB(userinfo: IUserInformation): Promise<void> {
     await this.connection.transaction(async (manager) => {
       const user = new UserEntity();
       user.id = ulid();
@@ -69,13 +70,15 @@ export class UsersService {
     });
   }
 
-  private async getUserAtRedis(signupVerifyToken: string): Promise<UserInfo> {
+  private async getUserAtRedis(
+    signupVerifyToken: string,
+  ): Promise<IUserInformation> {
     return await this.redisService.getTempUser(signupVerifyToken);
   }
 
   private async saveUserAtRedis(
     signupVerifyToken: string,
-    userinfo: UserInfo,
+    userinfo: IUserInformation,
   ): Promise<boolean> {
     return await this.redisService.setTempUser(signupVerifyToken, userinfo);
   }

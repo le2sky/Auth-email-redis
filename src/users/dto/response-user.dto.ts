@@ -1,7 +1,7 @@
-import { PickType } from '@nestjs/mapped-types';
-import { UserEntity } from '../entities/user.entity';
+import { PickType } from '@nestjs/swagger';
+import { CreateUserDto } from './create-user.dto';
 
-export class ResponseUserDto extends PickType(UserEntity, [
+export class ResponseUserDto extends PickType(CreateUserDto, [
   'email',
   'name',
 ] as const) {}

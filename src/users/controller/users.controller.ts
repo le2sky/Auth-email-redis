@@ -1,21 +1,10 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  Query,
-  Put,
-  UseInterceptors,
-  UnauthorizedException,
-  InternalServerErrorException,
-  Inject,
-} from '@nestjs/common';
+import { Controller, Post, Body, Query, UseInterceptors } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserLoginDto } from '../dto/login-user.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('api/users')
 @UseInterceptors(SuccessInterceptor)
@@ -25,6 +14,11 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+  @ApiResponse({
+    status: 201,
+    description: 'Redis에 임시 유저 저장 이후 이메일 발송 완료',
+    type: CreateUserDto,
+  })
   @Post()
   public async createUser(
     @Body() createUserDto: CreateUserDto,

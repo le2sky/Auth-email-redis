@@ -5,12 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-
-export interface UserInfo {
-  name: string;
-  email: string;
-  password: string;
-}
+import { IUserInformation } from 'src/interface/user-info.interface';
 
 @Injectable()
 export class RedisService {
@@ -18,7 +13,7 @@ export class RedisService {
 
   public async setTempUser(
     token: string,
-    userinfo: UserInfo,
+    userinfo: IUserInformation,
   ): Promise<boolean> {
     try {
       await this.cache.set(token, userinfo, {
@@ -29,7 +24,7 @@ export class RedisService {
       throw new InternalServerErrorException();
     }
   }
-  public async getTempUser(token: string): Promise<UserInfo> {
+  public async getTempUser(token: string): Promise<IUserInformation> {
     return await this.cache.get(token);
   }
 
