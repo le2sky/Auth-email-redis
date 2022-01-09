@@ -7,6 +7,8 @@ import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import * as winston from 'winston';
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as expressBasicAuth from 'express-basic-auth';
+
 async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('email-demo-openApi')
@@ -39,9 +41,20 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  app.use(
+    ['/docs', 'docs-json'],
+    expressBasicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+      },
+    }),
+  );
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  app.listen(3000);
+  const PORT = process.env.PORT;
+  await app.listen(PORT);
 }
 bootstrap();
