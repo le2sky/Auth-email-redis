@@ -15,8 +15,6 @@ import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
-    UsersModule,
-    RedisModule,
     TypeOrmModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: `${__dirname}/config//env/.${process.env.NODE_ENV}.env`,
@@ -28,6 +26,8 @@ import { TerminusModule } from '@nestjs/terminus';
     AuthModule,
     HttpModule, //for health check
     TerminusModule,
+    UsersModule,
+    RedisModule,
   ],
   controllers: [AppController, HealthCheckController],
 })
